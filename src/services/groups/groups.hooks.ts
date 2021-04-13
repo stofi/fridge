@@ -2,6 +2,9 @@ import * as authentication from "@feathersjs/authentication";
 // Don't remove this comment. It's needed to format import lines nicely.
 import { populate } from "feathers-hooks-common";
 
+import addDefaultSpace from "./hooks/addDefaultSpace";
+import cleanSpaces from "./hooks/cleanSpaces";
+
 const { authenticate } = authentication.hooks;
 
 export default {
@@ -38,10 +41,10 @@ export default {
     ],
     find: [],
     get: [],
-    create: [],
+    create: [addDefaultSpace],
     update: [],
     patch: [],
-    remove: [],
+    remove: [cleanSpaces],
   },
 
   error: {

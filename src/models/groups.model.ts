@@ -11,8 +11,8 @@ export default function (app: Application): Model<any> {
   const { Schema } = mongooseClient;
   const schema = new Schema(
     {
-      text: { type: String, required: true },
-      owner: { type: Schema.Types.ObjectId, ref: "users" },
+      name: { type: String },
+      owner: { type: Schema.Types.ObjectId, ref: "users", required: true },
       members: [{ type: Schema.Types.ObjectId, ref: "users" }],
     },
     {

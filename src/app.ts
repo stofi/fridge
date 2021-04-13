@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Set up Plugins and providers
-
+app.configure(express.rest());
 app.configure(socketio());
 
 app.configure(mongoose);

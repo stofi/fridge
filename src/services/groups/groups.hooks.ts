@@ -3,6 +3,9 @@ import * as authentication from "@feathersjs/authentication";
 import { populate } from "feathers-hooks-common";
 
 import addDefaultSpace from "./hooks/addDefaultSpace";
+import addOwner from "./hooks/addOwner";
+import preventDefaultDelete from "./hooks/preventDefaultDelete";
+
 import cleanSpaces from "./hooks/cleanSpaces";
 
 const { authenticate } = authentication.hooks;
@@ -12,10 +15,10 @@ export default {
     all: [authenticate("jwt")],
     find: [],
     get: [],
-    create: [],
+    create: [addOwner],
     update: [],
     patch: [],
-    remove: [],
+    remove: [preventDefaultDelete],
   },
 
   after: {
@@ -34,6 +37,7 @@ export default {
               nameAs: "members",
               parentField: "members",
               childField: "_id",
+              asArray: true,
             },
           ],
         },

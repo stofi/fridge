@@ -1,8 +1,9 @@
 import { HookContext } from "@feathersjs/feathers";
 
 const addDefaultGroup = async (context: HookContext) => {
-  context.app.services["groups"].create({
+  await context.app.services["groups"].create({
     name: 'default-group',
+    default: true,
     owner: context.result._id,
   });
 

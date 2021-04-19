@@ -4,6 +4,8 @@ import { populate } from "feathers-hooks-common";
 
 import addDefaultSpace from "./hooks/addDefaultSpace";
 import addOwner from "./hooks/addOwner";
+import isOwner from "./hooks/isOwner";
+import userQuery from "./hooks/userQuery";
 import preventDefaultDelete from "./hooks/preventDefaultDelete";
 
 import cleanSpaces from "./hooks/cleanSpaces";
@@ -13,12 +15,12 @@ const { authenticate } = authentication.hooks;
 export default {
   before: {
     all: [authenticate("jwt")],
-    find: [],
-    get: [],
+    find: [userQuery],
+    get: [userQuery],
     create: [addOwner],
-    update: [],
-    patch: [],
-    remove: [preventDefaultDelete],
+    update: [isOwner],
+    patch: [isOwner],
+    remove: [preventDefaultDelete, isOwner],
   },
 
   after: {

@@ -14,6 +14,7 @@ export default function (app: Application): Model<any> {
       name: { type: String },
       owner: { type: Schema.Types.ObjectId, ref: "users", required: true },
       members: [{ type: Schema.Types.ObjectId, ref: "users" }],
+      default: { type: Boolean, default: false },
     },
     {
       timestamps: true,

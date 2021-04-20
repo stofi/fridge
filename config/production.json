@@ -1,4 +1,9 @@
 {
   "host": "kredenc-api.letna.dev",
-  "port": "PORT"
+  "port": "PORT",
+  "authentication": {
+    "jwtOptions": {
+      "audience": "letna.dev"
+    }
+  }
 }

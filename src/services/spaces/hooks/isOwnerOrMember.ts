@@ -1,4 +1,4 @@
-import { HookContext, Id } from "@feathersjs/feathers";
+import { HookContext, Id } from '@feathersjs/feathers';
 
 interface User {
   _id: Id;
@@ -11,27 +11,34 @@ interface Group {
 }
 
 const isOwnerOrMember = async (context: HookContext) => {
-  if (context.data.default && context.method === "create")
-    return context;
-  const approved = await context.app.services["groups"]
-    .find({
-      query: {
-        _id: context.data.group,
-      },
-      paginate: false,
-    })
-    .then(([group]: Group[]) => {
-      const isMember = !!group.members.find(
-        ({ _id }) => _id === context.params.user?._id
-      );
-      const isOwner =
-        String(group.owner._id) === String(context.params.user?._id);
+  const [space] = await context.app.services['spaces'].find({
+    query: {
+      _id: context.id,
+    },
+    paginate: false,
+  });
+  const [group] = await context.app.services['groups'].find({
+    query: {
+      _id: space ? space.group : context.data.group,
+    },
+    paginate: false,
+  });
 
-      return isMember || isOwner;
-    });
-  console.log(approved);
+  const isDefaultSpace =
+    (space && space.default) || (context.data && context.data.default);
+  const isDefaultGroup = group && group.default;
+  const isCreateMethod = context.method === 'create';
 
-  if (!approved) throw new Error("User is not approved for this group");
+  if ((isDefaultSpace || isDefaultGroup) && isCreateMethod) return context;
+
+  const isMember = !!group.members.find(
+    ({ _id }: User) => _id === context.params.user?._id
+  );
+  const isOwner = String(group.owner._id) === String(context.params.user?._id);
+  const isApproved = isOwner || isMember;
+
+  if (!isApproved)
+    throw new Error('User is not approved to add a space for this group');
 
   return context;
 };

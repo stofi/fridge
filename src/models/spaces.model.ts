@@ -12,7 +12,7 @@ export default function (app: Application): Model<any> {
   const schema = new Schema(
     {
       name: { type: String, required: true },
-      group: { type: Schema.Types.ObjectId, ref: "groups" },
+      group: { type: Schema.Types.ObjectId, ref: 'groups' },
       default: { type: Boolean, default: false },
     },
     {

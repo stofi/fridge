@@ -1,19 +1,19 @@
-import { HookContext } from "@feathersjs/feathers";
+import { HookContext } from '@feathersjs/feathers';
 
 interface Instance {
   _id: string;
 }
 
 const cleanInstances = async (context: HookContext) => {
-  context.app.services["instances"]
+  context.app.services['instances']
     .find({
-      query: { group: context.result._id, $select: ["_id"] },
+      query: { group: context.result._id, $select: ['_id'] },
       paginate: false,
     })
     .then(async (instances: Instance[]) => {
       instances.reduce(async (prev: Promise<any>, curr: Instance) => {
         await prev;
-        return context.app.services["instances"].remove(curr._id);
+        return context.app.services['instances'].remove(curr._id);
       }, Promise.resolve());
     })
     .catch(console.error);

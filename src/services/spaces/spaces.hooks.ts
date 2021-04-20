@@ -1,24 +1,24 @@
-import * as authentication from "@feathersjs/authentication";
+import * as authentication from '@feathersjs/authentication';
 // Don't remove this comment. It's needed to format import lines nicely.
-import cleanInstances from "./hooks/cleanInstances";
-import { populate } from "feathers-hooks-common";
-import preventDefaultDelete from "./hooks/preventDefaultDelete";
-import moveInstances from "./hooks/moveInstances";
-import isOwnerOrMember from "./hooks/isOwnerOrMember";
-import userQuery from "./hooks/userQuery";
+import cleanInstances from './hooks/cleanInstances';
+import { populate } from 'feathers-hooks-common';
+import preventDefaultDelete from './hooks/preventDefaultDelete';
+import moveInstances from './hooks/moveInstances';
+import isOwnerOrMember from './hooks/isOwnerOrMember';
+import userQuery from './hooks/userQuery';
 
 
 const { authenticate } = authentication.hooks;
 
 export default {
   before: {
-    all: [authenticate("jwt")],
+    all: [authenticate('jwt')],
     find: [userQuery],
     get: [userQuery],
     create: [isOwnerOrMember],
     update: [isOwnerOrMember],
     patch: [isOwnerOrMember],
-    remove: [isOwnerOrMember, preventDefaultDelete],
+    remove: [isOwnerOrMember, preventDefaultDelete, moveInstances],
   },
 
   after: {
@@ -27,10 +27,10 @@ export default {
         schema: {
           include: [
             {
-              service: "groups",
-              nameAs: "group",
-              parentField: "group",
-              childField: "_id",
+              service: 'groups',
+              nameAs: 'group',
+              parentField: 'group',
+              childField: '_id',
             },
           ],
         },
@@ -41,7 +41,7 @@ export default {
     create: [],
     update: [],
     patch: [],
-    remove: [moveInstances],
+    remove: [],
   },
 
   error: {

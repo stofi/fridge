@@ -1,21 +1,21 @@
-import { HookContext } from "@feathersjs/feathers";
+import { HookContext } from '@feathersjs/feathers';
 
 interface User {
-  _id: String;
+  _id: string;
 }
 
 interface Group {
-  _id: String;
+  _id: string;
   owner: User;
   members: User[];
 }
 
 const userQuery = async (context: HookContext) => {
   if (!context.params.user?._id) return context;
-  const approved: Group[] = await context.app.services["groups"]
+  const approved: Group[] = await context.app.services['groups']
     .find({
       query: {
-        $select: ["_id"],
+        $select: ['_id'],
         $or: [
           { owner: context.params.user?._id },
           {

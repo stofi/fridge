@@ -1,11 +1,11 @@
-import { HookContext } from "@feathersjs/feathers";
+import { HookContext } from '@feathersjs/feathers';
 
 interface User {
-  _id: String;
+  _id: string;
 }
 
 interface Group {
-  _id: String;
+  _id: string;
   owner: User;
   members: User[];
 }

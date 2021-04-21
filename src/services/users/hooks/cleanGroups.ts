@@ -13,7 +13,7 @@ const cleanGroups = async (context: HookContext): Promise<HookContext> => {
     .then(async (groups: Group[]) => {
       groups.reduce(async (prev: Promise<any>, curr: Group) => {
         await prev;
-        return context.app.services['groups'].remove(curr._id);
+        return context.app.services['groups'].remove(curr._id, { force: true });
       }, Promise.resolve());
     })
     .catch((e: Error) => {

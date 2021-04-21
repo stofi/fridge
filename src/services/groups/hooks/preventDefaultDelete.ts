@@ -3,6 +3,7 @@ import { HookContext } from '@feathersjs/feathers';
 const preventDefaultDelete = async (
   context: HookContext
 ): Promise<HookContext> => {
+  if (context.params.force) return context;
   const [group] = await context.app.services['groups']
     .find({
       query: {

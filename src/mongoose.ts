@@ -7,7 +7,7 @@ export default function (app: Application): void {
     .connect(app.get('mongodb'), {
       useCreateIndex: true,
       useNewUrlParser: true,
-      useUnifiedTopology: true,
+      useUnifiedTopology: process.env.NODE_ENV !== 'test',
     })
     .catch((err) => {
       logger.error(err);

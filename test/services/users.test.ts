@@ -1,4 +1,5 @@
 import app from '../../src/app';
+// import { noop } from '../../utils/helpers';
 
 describe('\'users\' service', () => {
   it('registered the service', () => {
@@ -6,31 +7,46 @@ describe('\'users\' service', () => {
     expect(service).toBeTruthy();
   });
 
-  // describe('local strategy', () => {
-  //   const userInfo = {
-  //     email: 'someone@example.com',
-  //     password: 'supersecret',
-  //   };
+  describe('create user', () => {
+    const userInfo = {
+      email: 'test-user-hooks@example.com',
+      password: 'supersecret',
+      username: 'test-user-hooks',
+    };
+    let user: any;
+    let defaultGroup: any;
 
-  //   beforeAll(async () => {
-  //     try {
-  //       await app.service('users').create(userInfo);
-  //     } catch (error) {
-  //       // Do nothing, it just means the user already exists and can be tested
-  //     }
-  //   });
+    it('creates the user', async () => {
+      user = await app.service('users').create(userInfo);
+      expect(user).toBeTruthy();
+      expect(user.username).toEqual(userInfo.username);
+      expect(user.email).toEqual(userInfo.email);
+      expect(user.password).not.toEqual(userInfo.password);
+    });
+    it('creates default group', async () => {
+      defaultGroup = await app.service('groups').find({
+        query: {
+          owner: user,
+          default: true,
+        },
+        paginate: false,
+      });
 
-  //   it('authenticates user and creates accessToken', async () => {
-  //     const { user, accessToken } = await app.service('authentication').create(
-  //       {
-  //         strategy: 'local',
-  //         ...userInfo,
-  //       },
-  //       {}
-  //     );
+      expect(defaultGroup).toHaveLength(1);
+    });
+    it('removes the user', async () => {
+      await app.service('users').remove(user);
+      const deletedUser = app.service('users').get(user);
+      
+      expect(deletedUser).resolves.toBeFalsy();
+    });
 
-  //     expect(accessToken).toBeTruthy();
-  //     expect(user).toBeTruthy();
-  //   });
-  // });
+    it('cleans default group', async () => {
+      setTimeout(async () => {
+        const deletedGroup = await app.service('groups').get(defaultGroup);
+
+        expect(deletedGroup).toBeFalsy();
+      }, 300);
+    });
+  });
 });

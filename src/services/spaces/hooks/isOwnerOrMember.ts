@@ -5,7 +5,7 @@ interface User {
 }
 
 const isOwnerOrMember = async (context: HookContext): Promise<HookContext> => {
-  if (!context.params.user?._id) return context;
+  if (context.params.force) return context;
   const [space] = await context.app.services['spaces']
     .find({
       query: {

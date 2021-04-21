@@ -29,6 +29,7 @@
     "dev": "ts-node-dev --no-notify src/",
     "start": "yarn run compile && node lib/",
     "jest": "jest  --forceExit",
+    "clean": "NODE_ENV=test ts-node utils/dropDatabase",
     "compile": "shx rm -rf lib/ && tsc"
   },
   "standard": {
@@ -55,7 +56,7 @@
     "feathers-mongoose": "^8.3.1",
     "helmet": "^4.3.1",
     "mongodb-core": "^3.2.7",
-    "mongoose": "^5.11.9",
+    "mongoose": "^5.11.15",
     "serve-favicon": "^2.5.0",
     "winston": "^3.0.0"
   },

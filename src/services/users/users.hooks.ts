@@ -8,7 +8,7 @@ import cleanGroups from './hooks/cleanGroups';
 const { authenticate } = feathersAuthentication.hooks;
 const { hashPassword, protect } = local.hooks;
 
-const userUnique = async (context: HookContext) => {
+const userUnique = async (context: HookContext): Promise<HookContext> => {
   const [user] = await context.app.services['users'].find({
     query: {
       $or: [{ username: context.data.username }, { email: context.data.email }],

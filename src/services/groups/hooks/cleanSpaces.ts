@@ -4,10 +4,10 @@ interface Space {
   _id: string;
 }
 
-const cleanSpaces = async (context: HookContext) => {
+const cleanSpaces = async (context: HookContext): Promise<HookContext> => {
   context.app.services['spaces']
     .find({
-      query: { group: context.result._id, $select: ['_id'] },
+      query: { group: context.id, $select: ['_id'] },
       paginate: false,
     })
     .then(async (spaces: Space[]) => {
@@ -16,7 +16,10 @@ const cleanSpaces = async (context: HookContext) => {
         return context.app.services['spaces'].remove(curr._id, { force: true });
       }, Promise.resolve());
     })
-    .catch(console.error);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return context;
 };

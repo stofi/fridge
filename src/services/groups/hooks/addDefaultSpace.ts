@@ -1,7 +1,7 @@
 import { HookContext } from '@feathersjs/feathers';
 
-const addDefaultSpace = async (context: HookContext) => {
-  const result = await context.app.services['spaces'].create({
+const addDefaultSpace = async (context: HookContext): Promise<HookContext> => {
+  await context.app.services['spaces'].create({
     name: 'default-space',
     default: true,
     group: context.result._id,

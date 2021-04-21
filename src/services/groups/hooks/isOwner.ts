@@ -1,6 +1,6 @@
 import { HookContext } from '@feathersjs/feathers';
 
-const isOwner = async (context: HookContext) => {
+const isOwner = async (context: HookContext): Promise<HookContext> => {
   const [group] = await context.app.services['groups'].find({
     query: {
       _id: context.id,

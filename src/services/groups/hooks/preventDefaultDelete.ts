@@ -1,6 +1,8 @@
-import { HookContext, Id } from '@feathersjs/feathers';
+import { HookContext } from '@feathersjs/feathers';
 
-const preventDefaultDelete = async (context: HookContext) => {
+const preventDefaultDelete = async (
+  context: HookContext
+): Promise<HookContext> => {
   const [group] = await context.app.services['groups']
     .find({
       query: {
@@ -8,7 +10,10 @@ const preventDefaultDelete = async (context: HookContext) => {
       },
       paginate: false,
     })
-    .catch(console.log);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   if (group.default) {
     throw new Error('cannot delete default-group');

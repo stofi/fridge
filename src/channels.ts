@@ -16,7 +16,13 @@ export default function (app: Application): void {
     // On a new real-time connection, add it to the anonymous channel
     app.channel('anonymous').join(connection);
   });
-
+  app.on('logout', (payload: any, { connection }: any) => {
+    if (connection) {
+      //When logging out, leave all channels before joining anonymous channel
+      app.channel(app.channels).leave(connection);
+      app.channel('anonymous').join(connection);
+    }
+  });
   app.on('login', (authResult: any, { connection }: any): void => {
     // connection can be undefined if there is no
     // real-time connection, e.g. when logging in via REST
@@ -27,10 +33,9 @@ export default function (app: Application): void {
       // The connection is no longer anonymous, remove it
       app.channel('anonymous').leave(connection);
 
+      app.channel(`user/${user._id}`).join(connection);
       // Add it to the authenticated user channel
       app.channel('authenticated').join(connection);
-
-      app.channel(`user/${user._id}`).join(connection);
 
       // Channels can be named anything and joined on any condition
 
@@ -46,49 +51,58 @@ export default function (app: Application): void {
     }
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // // eslint-disable-next-line @typescript-eslint/no-unused-vars
   // app.publish((data: any, hook: HookContext) => {
   //   // Here you can add event publishers to channels set up in `channels.ts`
   //   // To publish only for a specific event use `app.publish(eventname, () => {})`
   //   console.log(
-  //     "Publishing all events to all authenticated users. See `channels.ts` and https://docs.feathersjs.com/api/channels.html for more information."
+  //     'Publishing all events to all authenticated users. See `channels.ts` and https://docs.feathersjs.com/api/channels.html for more information.'
   //   ); // eslint-disable-line
-
   //   // e.g. to publish all service events to all authenticated users use
-  //   return app.channel("authenticated");
+  //   return app.channel('authenticated');
   // });
 
   app
     .service('groups')
-    .publish((data: any, context: HookContext) => [
-      app.channel(`owner/${data.owner}`),
-      ...data.members
-        .map(({ _id }: User) => `user/${_id}`)
-        .forEach(app.channel),
+    .publish((data: any) => [
+      app.channel(`user/${data.owner._id}`),
+      ...data.members.forEach(({ _id }: User) => app.channel(`user/${_id}`)),
     ]);
 
-  // app.service("spaces").publish((data: any, context: HookContext) => {
-  //   console.log(data);
-
-  //   return app.channel("authenticated");
-  //   return [
-  //     app.channel(`owner/${data.owner}`),
-  //     ...data.members
-  //       .map(({ _id }: User) => `user/${_id}`)
-  //       .forEach(app.channel),
-  //   ];
-  // });
-  // app.service("instances").publish((data: any, context: HookContext) => {
-  //   return [
-  //     app.channel(`owner/${data.owner}`),
-  //     ...data.members
-  //       .map(({ _id }: User) => `user/${_id}`)
-  //       .forEach(app.channel),
-  //   ];
-  // });
   app
-    .service('products')
-    .publish((data: any, context: HookContext) => app.channel('authenticated'));
+    .service('spaces')
+    .publish((data: any) =>
+      !!(data.group && data.group.owner)
+        ? [
+          app.channel(`user/${data.group.owner}`),
+          ...data.group.members.forEach(({ _id }: User) =>
+            app.channel(`user/${_id}`)
+          ),
+        ]
+        : app.channel('authenticated')
+    );
+  app.service('instances').publish(async (data: any, context: HookContext) => {
+    if (!data.space) return app.channel('authenticated');
+    if (!data.space.group) return app.channel('authenticated');
+
+    const [group] = await context.app.services['groups']
+      .find({
+        query: {
+          _id: data.space.group,
+        },
+        paginate: false,
+      })
+      .catch((e: Error) => {
+        throw e;
+      });
+
+    if (!group) return app.channel('authenticated');
+    return [
+      app.channel(`user/${group.owner._id}`),
+      ...group.members.forEach(({ _id }: User) => app.channel(`user/${_id}`)),
+    ];
+  });
+  app.service('products').publish(() => app.channel('authenticated'));
 
   // Here you can also add service specific event publishers
   // e.g. the publish the `users` service `created` event to the `admins` channel

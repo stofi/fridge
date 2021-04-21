@@ -4,25 +4,33 @@ interface User {
   _id: Id;
 }
 
-interface Group {
-  _id: Id;
-  owner: User;
-  members: User[];
-}
+const isOwnerOrMember = async (context: HookContext): Promise<HookContext> => {
+  if (!context.params.user?._id) return context;
+  const [space] = await context.app.services['spaces']
+    .find({
+      query: {
+        _id: context.id,
+      },
+      paginate: false,
+    })
+    .catch((e: Error) => {
+      throw e;
+    });
 
-const isOwnerOrMember = async (context: HookContext) => {
-  const [space] = await context.app.services['spaces'].find({
-    query: {
-      _id: context.id,
-    },
-    paginate: false,
-  });
-  const [group] = await context.app.services['groups'].find({
-    query: {
-      _id: space ? space.group : context.data.group,
-    },
-    paginate: false,
-  });
+  if(!space) return context;
+
+  if (space && !!space.group) return context;
+
+  const [group] = await context.app.services['groups']
+    .find({
+      query: {
+        _id: space ? space.group : context.data.group,
+      },
+      paginate: false,
+    })
+    .catch((e: Error) => {
+      throw e;
+    });
 
   const isDefaultSpace =
     (space && space.default) || (context.data && context.data.default);

@@ -4,7 +4,7 @@ interface Group {
   _id: string;
 }
 
-const moveSpaces = async (context: HookContext) => {
+const moveSpaces = async (context: HookContext): Promise<HookContext> => {
   context.app.services['groups']
     .find({
       query: {
@@ -29,7 +29,10 @@ const moveSpaces = async (context: HookContext) => {
           }, Promise.resolve())
         )
     )
-    .catch(console.error);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return context;
 };

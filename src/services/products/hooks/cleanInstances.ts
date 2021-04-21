@@ -4,7 +4,7 @@ interface Instance {
   _id: string;
 }
 
-const cleanInstances = async (context: HookContext) => {
+const cleanInstances = async (context: HookContext): Promise<HookContext> => {
   context.app.services['instances']
     .find({
       query: { product: context.result._id, $select: ['_id'] },
@@ -16,7 +16,10 @@ const cleanInstances = async (context: HookContext) => {
         return context.app.services['instances'].remove(curr._id);
       }, Promise.resolve());
     })
-    .catch(console.error);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return context;
 };

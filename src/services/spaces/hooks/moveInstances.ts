@@ -4,13 +4,15 @@ interface Instance {
   _id: string;
 }
 
-const moveInstances = async (context: HookContext) => {
+const moveInstances = async (context: HookContext): Promise<HookContext> => {
+  if (context.params.force) return context;
   const [space] = await context.app.services['spaces'].find({
     query: {
       _id: context.id,
     },
     paginate: false,
   });
+  
   context.app.services['spaces']
     .find({
       query: {
@@ -29,8 +31,6 @@ const moveInstances = async (context: HookContext) => {
         .then(async (instances: Instance[]) =>
           instances.reduce(async (prev: Promise<any>, curr: Instance) => {
             await prev;
-            console.log(curr);
-
             return context.app.services['instances'].patch(curr._id, {
               default: false,
               space: defaultSpace._id,
@@ -38,7 +38,10 @@ const moveInstances = async (context: HookContext) => {
           }, Promise.resolve())
         )
     )
-    .catch(console.error);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return context;
 };

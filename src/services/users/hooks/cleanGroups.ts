@@ -4,7 +4,7 @@ interface Group {
   _id: string;
 }
 
-const cleanGroups = async (context: HookContext) => {
+const cleanGroups = async (context: HookContext): Promise<HookContext> => {
   context.app.services['groups']
     .find({
       query: { owner: context.result._id, $select: ['_id'] },
@@ -16,7 +16,9 @@ const cleanGroups = async (context: HookContext) => {
         return context.app.services['groups'].remove(curr._id);
       }, Promise.resolve());
     })
-    .catch(console.error);
+    .catch((e: Error) => {
+      throw e;
+    });
 
   return context;
 };

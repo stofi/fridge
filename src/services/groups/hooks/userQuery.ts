@@ -1,16 +1,6 @@
 import { HookContext } from '@feathersjs/feathers';
 
-interface User {
-  _id: string;
-}
-
-interface Group {
-  _id: string;
-  owner: User;
-  members: User[];
-}
-
-const userQuery = async (context: HookContext) => {
+const userQuery = async (context: HookContext): Promise<HookContext> => {
   if (!context.params.user) return context;
   context.params.query = {
     ...context.params.query,

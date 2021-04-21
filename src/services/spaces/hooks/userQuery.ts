@@ -10,7 +10,7 @@ interface Group {
   members: User[];
 }
 
-const userQuery = async (context: HookContext) => {
+const userQuery = async (context: HookContext): Promise<HookContext> => {
   if (!context.params.user?._id) return context;
   const approved: Group[] = await context.app.services['groups']
     .find({
@@ -26,7 +26,10 @@ const userQuery = async (context: HookContext) => {
       paginate: false,
     })
     .then((groups: Group[]) => groups.map(({ _id }) => _id))
-    .catch(console.error);
+
+    .catch((e: Error) => {
+      throw e;
+    });
 
   context.params.query = {
     ...context.params.query,

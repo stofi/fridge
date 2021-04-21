@@ -14,7 +14,7 @@ interface Space {
   group: Group;
 }
 
-const userQuery = async (context: HookContext) => {
+const userQuery = async (context: HookContext): Promise<HookContext> => {
   if (!context.params.user?._id) return context;
   const approved: Group[] = await context.app.services['groups']
     .find({
@@ -30,7 +30,10 @@ const userQuery = async (context: HookContext) => {
       paginate: false,
     })
     .then((groups: Group[]) => groups.map(({ _id }) => _id))
-    .catch(console.error);
+    
+    .catch((e: Error) => {
+      throw e;
+    });
 
   const spaces: Space[] = await context.app.services['spaces']
     .find({
@@ -41,16 +44,10 @@ const userQuery = async (context: HookContext) => {
       paginate: false,
     })
     .then((spaces: Space[]) => spaces.map(({ _id }) => _id))
-    .catch(console.error);
-
-  const b = await context.app.services['spaces']
-    .find({
-      query: {
-        $select: ['_id', 'group'],
-      },
-      paginate: false,
-    })
-    .then((spaces: Space[]) => spaces.map(({ _id }) => _id));
+    
+    .catch((e: Error) => {
+      throw e;
+    });
 
   context.params.query = {
     ...context.params.query,

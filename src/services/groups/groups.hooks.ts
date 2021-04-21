@@ -20,7 +20,7 @@ export default {
     create: [addOwner],
     update: [isOwner],
     patch: [isOwner],
-    remove: [preventDefaultDelete, isOwner],
+    remove: [preventDefaultDelete, isOwner, cleanSpaces],
   },
 
   after: {
@@ -50,7 +50,7 @@ export default {
     create: [addDefaultSpace],
     update: [],
     patch: [],
-    remove: [cleanSpaces],
+    remove: [],
   },
 
   error: {

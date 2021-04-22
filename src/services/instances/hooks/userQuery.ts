@@ -16,6 +16,7 @@ interface Space {
 
 const userQuery = async (context: HookContext): Promise<HookContext> => {
   if (!context.params.user?._id) return context;
+  if (!context.params.query) return context;
   const approved: Group[] = await context.app.services['groups']
     .find({
       query: {

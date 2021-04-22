@@ -31,10 +31,14 @@ const userQuery = async (context: HookContext): Promise<HookContext> => {
       throw e;
     });
 
-  context.params.query = {
-    ...context.params.query,
-    group: { $in: approved },
-  };
+
+  context.params.query = context.params.query?.group
+    ? context.params.query
+    : {
+      ...context.params.query,
+      group: { $in: approved },
+    };
+
 
   return context;
 };

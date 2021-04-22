@@ -1,8 +1,6 @@
 import { HookContext } from '@feathersjs/feathers';
+import { Space } from '../../../types/';
 
-interface Space {
-  _id: string;
-}
 
 const cleanSpaces = async (context: HookContext): Promise<HookContext> => {
   context.app.services['spaces']

@@ -4,9 +4,10 @@ import { populate } from 'feathers-hooks-common';
 
 import addDefaultSpace from './hooks/addDefaultSpace';
 import addOwner from './hooks/addOwner';
-import isOwner from './hooks/isOwner';
 import userQuery from './hooks/userQuery';
 import preventDefaultDelete from './hooks/preventDefaultDelete';
+
+import { isOwner } from '../../hooks/groupMembership';
 
 import cleanSpaces from './hooks/cleanSpaces';
 

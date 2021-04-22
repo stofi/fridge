@@ -45,7 +45,7 @@ describe('\'spaces\' service', () => {
       
       const deletedSpace = app.service('spaces').get(space);
 
-      expect(deletedSpace).resolves.toBeFalsy();
+      expect(deletedSpace).rejects.toBeInstanceOf(Error);
     });
   });
 });

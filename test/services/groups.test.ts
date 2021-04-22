@@ -52,7 +52,7 @@ describe('\'groups\' service', () => {
       
       const deletedGroup = app.service('groups').get(group);
 
-      expect(deletedGroup).resolves.toBeFalsy();
+      expect(deletedGroup).rejects.toBeInstanceOf(Error);
     });
 
     it('cleans default space', async () => {
@@ -62,7 +62,7 @@ describe('\'groups\' service', () => {
           .get(defaultSpace, { user });
 
         expect(deletedSpace).toBeFalsy();
-      }, 300);
+      }, 500);
     });
   });
 });

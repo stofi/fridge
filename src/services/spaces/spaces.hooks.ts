@@ -3,9 +3,8 @@ import * as authentication from '@feathersjs/authentication';
 import { populate } from 'feathers-hooks-common';
 import preventDefaultDelete from './hooks/preventDefaultDelete';
 import moveInstances from './hooks/moveInstances';
-import isOwnerOrMember from './hooks/isOwnerOrMember';
 import userQuery from './hooks/userQuery';
-
+import isOwnerOrMember from '../../hooks/groupMembership';
 const { authenticate } = authentication.hooks;
 
 export default {

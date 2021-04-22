@@ -3,6 +3,8 @@ import * as authentication from '@feathersjs/authentication';
 import { populate } from 'feathers-hooks-common';
 import userQuery from './hooks/userQuery';
 
+import isOwnerOrMember from '../../hooks/groupMembership';
+
 const { authenticate } = authentication.hooks;
 
 export default {
@@ -10,10 +12,10 @@ export default {
     all: [authenticate('jwt')],
     find: [userQuery],
     get: [userQuery],
-    create: [],
-    update: [],
-    patch: [],
-    remove: [],
+    create: [isOwnerOrMember],
+    update: [isOwnerOrMember],
+    patch: [isOwnerOrMember],
+    remove: [isOwnerOrMember],
   },
 
   after: {

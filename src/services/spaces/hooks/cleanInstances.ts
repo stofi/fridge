@@ -1,8 +1,5 @@
 import { HookContext } from '@feathersjs/feathers';
-
-interface Instance {
-  _id: string;
-}
+import { Instance } from '../../../types/';
 
 const cleanInstances = async (context: HookContext): Promise<HookContext> => {
   context.app.services['instances']

@@ -1,18 +1,13 @@
-import { HookContext } from '@feathersjs/feathers';
+import { HookContext, Id } from '@feathersjs/feathers';
+import { Instance } from '../../../types/';
+import { isForced } from '../../../hooks/guards';
+import { findSpace, findGroup } from '../../../hooks/utils';
 
-interface Instance {
-  _id: string;
-}
 
 const moveInstances = async (context: HookContext): Promise<HookContext> => {
-  const [space] = await context.app.services['spaces'].find({
-    query: {
-      _id: context.id,
-    },
-    paginate: false,
-  });
+  const [space] = await findSpace(context.id as Id, context);
 
-  if (context.params.force) {
+  if (isForced(context)) {
     context.app.services['instances']
       .find({
         query: { space: context.id, $select: ['_id'] },
@@ -34,7 +29,7 @@ const moveInstances = async (context: HookContext): Promise<HookContext> => {
     .find({
       query: {
         default: true,
-        group: space.group._id,
+        group: space.group,
         $select: ['_id'],
       },
       paginate: false,

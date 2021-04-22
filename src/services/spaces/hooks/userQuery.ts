@@ -1,17 +1,9 @@
 import { HookContext } from '@feathersjs/feathers';
-
-interface User {
-  _id: string;
-}
-
-interface Group {
-  _id: string;
-  owner: User;
-  members: User[];
-}
+import { isClientOrWithUser } from '../../../hooks/guards';
+import { Group } from '../../../types/';
 
 const userQuery = async (context: HookContext): Promise<HookContext> => {
-  if (!context.params.user?._id) return context;
+  if (!isClientOrWithUser(context)) return context;
   const approved: Group[] = await context.app.services['groups']
     .find({
       query: {
@@ -31,14 +23,12 @@ const userQuery = async (context: HookContext): Promise<HookContext> => {
       throw e;
     });
 
-
   context.params.query = context.params.query?.group
     ? context.params.query
     : {
       ...context.params.query,
       group: { $in: approved },
     };
-
 
   return context;
 };

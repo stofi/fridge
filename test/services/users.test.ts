@@ -37,8 +37,8 @@ describe('\'users\' service', () => {
     it('removes the user', async () => {
       await app.service('users').remove(user);
       const deletedUser = app.service('users').get(user);
-      
-      expect(deletedUser).resolves.toBeFalsy();
+
+      expect(deletedUser).rejects.toBeInstanceOf(Error);
     });
 
     it('cleans default group', async () => {
@@ -46,7 +46,7 @@ describe('\'users\' service', () => {
         const deletedGroup = await app.service('groups').get(defaultGroup);
 
         expect(deletedGroup).toBeFalsy();
-      }, 300);
+      }, 400);
     });
   });
 });

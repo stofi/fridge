@@ -1,21 +1,10 @@
-import { HookContext, Id } from '@feathersjs/feathers';
-
-interface User {
-  _id: Id;
-}
-
-interface Group {
-  _id: Id;
-  owner: User;
-  members: User[];
-}
-interface Space {
-  _id: Id;
-  group: Group;
-}
+import { HookContext } from '@feathersjs/feathers';
+import { Group, Space } from '../../../types/';
+import { isClientOrWithUser, isForced } from '../../../hooks/guards';
 
 const userQuery = async (context: HookContext): Promise<HookContext> => {
-  if (!context.params.user?._id) return context;
+  if (!isClientOrWithUser(context)) return context;
+  if (isForced(context)) return context;
   if (!context.params.query) return context;
   const approved: Group[] = await context.app.services['groups']
     .find({
@@ -31,7 +20,7 @@ const userQuery = async (context: HookContext): Promise<HookContext> => {
       paginate: false,
     })
     .then((groups: Group[]) => groups.map(({ _id }) => _id))
-    
+
     .catch((e: Error) => {
       throw e;
     });
@@ -45,7 +34,7 @@ const userQuery = async (context: HookContext): Promise<HookContext> => {
       paginate: false,
     })
     .then((spaces: Space[]) => spaces.map(({ _id }) => _id))
-    
+
     .catch((e: Error) => {
       throw e;
     });

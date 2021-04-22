@@ -1,8 +1,5 @@
 import { HookContext } from '@feathersjs/feathers';
-
-interface Group {
-  _id: string;
-}
+import { Group } from '../../../types/';
 
 const moveSpaces = async (context: HookContext): Promise<HookContext> => {
   context.app.services['groups']

@@ -12,13 +12,13 @@ const resolvers = {
   joins: {
     product: () => async (instance: any, { app }: HookContext) => {
       if (!instance.product) return;
-      instance.product = await app.services['product']
+      instance.product = await app.services['products']
         .get(instance.product)
         .catch(() => null);
     },
     space: () => async (instance: any, { app }: HookContext) => {
       if (!instance.space) return;
-      instance.space = await app.services['space']
+      instance.space = await app.services['spaces']
         .get(instance.space)
         .catch(() => null);
     },

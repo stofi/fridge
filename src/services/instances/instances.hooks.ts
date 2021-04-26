@@ -1,11 +1,29 @@
 import * as authentication from '@feathersjs/authentication';
 // Don't remove this comment. It's needed to format import lines nicely.
-import { populate } from 'feathers-hooks-common';
+import { fastJoin } from 'feathers-hooks-common';
 import userQuery from './hooks/userQuery';
+import { HookContext } from '@feathersjs/feathers';
 
 import isOwnerOrMember from '../../hooks/groupMembership';
 
 const { authenticate } = authentication.hooks;
+
+const resolvers = {
+  joins: {
+    product: () => async (instance: any, { app }: HookContext) => {
+      if (!instance.product) return;
+      instance.product = await app.services['product']
+        .get(instance.product)
+        .catch(() => null);
+    },
+    space: () => async (instance: any, { app }: HookContext) => {
+      if (!instance.space) return;
+      instance.space = await app.services['space']
+        .get(instance.space)
+        .catch(() => null);
+    },
+  },
+};
 
 export default {
   before: {
@@ -20,24 +38,7 @@ export default {
 
   after: {
     all: [
-      populate({
-        schema: {
-          include: [
-            {
-              service: 'products',
-              nameAs: 'product',
-              parentField: 'product',
-              childField: '_id',
-            },
-            {
-              service: 'spaces',
-              nameAs: 'space',
-              parentField: 'space',
-              childField: '_id',
-            },
-          ],
-        },
-      }),
+      fastJoin(resolvers)
     ],
     find: [],
     get: [],

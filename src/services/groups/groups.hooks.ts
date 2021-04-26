@@ -1,17 +1,39 @@
 import * as authentication from '@feathersjs/authentication';
 // Don't remove this comment. It's needed to format import lines nicely.
-import { populate } from 'feathers-hooks-common';
-
 import addDefaultSpace from './hooks/addDefaultSpace';
 import addOwner from './hooks/addOwner';
 import userQuery from './hooks/userQuery';
 import preventDefaultDelete from './hooks/preventDefaultDelete';
+import { fastJoin } from 'feathers-hooks-common';
+import { HookContext } from '@feathersjs/feathers';
 
 import { isOwner } from '../../hooks/groupMembership';
 
 import cleanSpaces from './hooks/cleanSpaces';
 
 const { authenticate } = authentication.hooks;
+
+const resolvers = {
+  joins: {
+    members: () => async (group: any, { app }: HookContext) => {
+      if (!group.members) return;
+      group.members = await app.services['users']
+        .find({
+          query: {
+            _id: { $in: group.members },
+          },
+          paginate: false,
+        })
+        .catch(() => []);
+    },
+    owner: () => async (group: any, { app }: HookContext) => {
+      if (!group.owner) return;
+      group.owner = await app.services['users']
+        .get(group.owner)
+        .catch(() => null);
+    },
+  },
+};
 
 export default {
   before: {
@@ -25,27 +47,7 @@ export default {
   },
 
   after: {
-    all: [
-      populate({
-        schema: {
-          include: [
-            {
-              service: 'users',
-              nameAs: 'owner',
-              parentField: 'owner',
-              childField: '_id',
-            },
-            {
-              service: 'users',
-              nameAs: 'members',
-              parentField: 'members',
-              childField: '_id',
-              asArray: true,
-            },
-          ],
-        },
-      }),
-    ],
+    all: [fastJoin(resolvers)],
     find: [],
     get: [],
     create: [addDefaultSpace],

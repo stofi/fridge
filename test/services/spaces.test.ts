@@ -20,14 +20,14 @@ describe('\'spaces\' service', () => {
     beforeAll(async () => {
       user = await app.service('users').create(userInfo);
       group = await app.service('groups').create({
-        owner: user,
+        owner: user._id,
         name: 'space-test group',
       });
     });
 
     it('creates the space', async () => {
       space = await app.service('spaces').create({
-        group,
+        group: group._id,
         name: 'test space',
       });
 
@@ -39,11 +39,11 @@ describe('\'spaces\' service', () => {
     });
 
     it('removes the space', async () => {
-      await app.service('spaces').remove(space, {
+      await app.service('spaces').remove(space._id, {
         user,
       });
       
-      const deletedSpace = app.service('spaces').get(space);
+      const deletedSpace = app.service('spaces').get(space._id);
 
       expect(deletedSpace).rejects.toBeInstanceOf(Error);
     });

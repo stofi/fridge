@@ -46,7 +46,7 @@ describe('\'users\' service', () => {
         const deletedGroup = await app.service('groups').get(defaultGroup);
 
         expect(deletedGroup).toBeFalsy();
-      }, 400);
+      }, 1000);
     });
   });
 });

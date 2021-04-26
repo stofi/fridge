@@ -23,20 +23,20 @@ describe('\'groups\' service', () => {
 
     it('creates the group', async () => {
       group = await app.service('groups').create({
-        owner: user,
+        owner: user._id,
         name: 'test group',
       });
 
       expect(group).toBeTruthy();
       expect(group.name).toEqual('test group');
       expect(group.default).toBeFalsy();
-      expect(group.owner).toEqual(user);
+      expect(group.owner._id).toEqual(user._id);
     });
 
     it('creates default space', async () => {
       defaultSpace = await app.service('spaces').find({
         query: {
-          group,
+          group: group._id,
           default: true,
         },
         paginate: false,
@@ -46,11 +46,11 @@ describe('\'groups\' service', () => {
     });
 
     it('removes the group', async () => {
-      await app.service('groups').remove(group, {
-        user,
+      await app.service('groups').remove(group._id, {
+        user: user._id,
       });
       
-      const deletedGroup = app.service('groups').get(group);
+      const deletedGroup = app.service('groups').get(group._id);
 
       expect(deletedGroup).rejects.toBeInstanceOf(Error);
     });
@@ -59,7 +59,7 @@ describe('\'groups\' service', () => {
       setTimeout(async () => {
         const deletedSpace = await app
           .service('groups')
-          .get(defaultSpace, { user });
+          .get(defaultSpace, { user: user._id });
 
         expect(deletedSpace).toBeFalsy();
       }, 500);

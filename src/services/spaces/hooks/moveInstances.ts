@@ -1,7 +1,7 @@
 import { HookContext, Id } from '@feathersjs/feathers';
 import { Instance } from '../../../types/';
 import { isForced } from '../../../hooks/guards';
-import { findSpace, findGroup } from '../../../hooks/utils';
+import { findSpace } from '../../../hooks/utils';
 
 
 const moveInstances = async (context: HookContext): Promise<HookContext> => {

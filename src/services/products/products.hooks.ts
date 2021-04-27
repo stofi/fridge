@@ -1,6 +1,8 @@
 import * as authentication from '@feathersjs/authentication';
 // Don't remove this comment. It's needed to format import lines nicely.
 import cleanInstances from './hooks/cleanInstances';
+import preventNonEmptyDefault from './hooks/preventNonEmptyDelete';
+
 const { authenticate } = authentication.hooks;
 
 export default {
@@ -11,7 +13,7 @@ export default {
     create: [],
     update: [],
     patch: [],
-    remove: [],
+    remove: [preventNonEmptyDefault],
   },
 
   after: {

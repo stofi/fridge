@@ -15,6 +15,7 @@ describe('\'products\' service', () => {
     };
     let user: any;
     let product: any;
+    let instance: any;
 
     beforeAll(async () => {
       user = await app.service('users').create(userInfo);
@@ -31,7 +32,36 @@ describe('\'products\' service', () => {
       expect(product.defaultQuantity).toEqual(1);
     });
 
+    it('does not delete product with instances', async () => {
+      const group = await app.service('groups').create({
+        owner: user._id,
+        name: 'product-test group',
+      });
+      const space = await app.service('spaces').create({
+        name: 'product-test space',
+        group: group._id,
+      });
+      const purchaseDate = new Date();
+      const untilDate = new Date();
+      const quantity = 1;
+      instance = await app.service('instances').create({
+        product: product._id,
+        space: space._id,
+        quantity,
+        purchaseDate,
+        untilDate,
+      });
+      const notDeletedProduct = app.service('products').remove(product._id, {
+        user,
+      });
+
+      expect(notDeletedProduct).rejects.toBeInstanceOf(Error);
+    });
+
     it('removes the product', async () => {
+      await app.service('instances').remove(instance._id, {
+        user,
+      });
       await app.service('products').remove(product._id, {
         user,
       });

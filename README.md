@@ -3,7 +3,7 @@
 # Install your dependencies
 
 ```
-npm install
+yarn install
 ```
 
 
@@ -17,15 +17,13 @@ MONGODB_URL="mongodb://localhost:27017/fridge"
 # URI for testing database
 MONGODB_TEST_URL="mongodb://localhost:27017/fridge-test"
 
-# Port for the node.js server
-PORT=3030
 ```
 
 
 # Start your app
 
 ```
-npm start
+yarn start
 ```
 
 
@@ -42,10 +40,10 @@ POST a json object to /users
 
 Or with the application running on localhost:3030
 ```
-./bin/addUser user@example.com secretpassword username
+./bin/addUser user@example.com username secretpassword
 ```
 
 
 ## Testing
 
-Simply run `npm test` and all your tests in the `test/` directory will be run.
+Simply run `yarn test` and all your tests in the `test/` directory will be run.

@@ -30,16 +30,14 @@ export default {
     all: [authenticate('jwt')],
     find: [userQuery],
     get: [userQuery],
-    create: [],
+    create: [isOwnerOrMember],
     update: [isOwnerOrMember],
     patch: [isOwnerOrMember],
     remove: [isOwnerOrMember],
   },
 
   after: {
-    all: [
-      fastJoin(resolvers)
-    ],
+    all: [fastJoin(resolvers)],
     find: [],
     get: [],
     create: [],

@@ -24,7 +24,7 @@ export default {
     all: [authenticate('jwt')],
     find: [userQuery],
     get: [userQuery],
-    create: [isOwnerOrMember],
+    create: [],
     update: [isOwnerOrMember],
     patch: [isOwnerOrMember],
     remove: [isOwnerOrMember, preventDefaultDelete, moveInstances],

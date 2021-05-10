@@ -11,7 +11,7 @@ import { Group } from '../types';
 
 const instanceOwnerOrMember = async (context: HookContext): Promise<Group> => {
   const [instance] = await findInstance(context.id as Id, context);
-  if (!instance) throw new Error('No instance for this id');
+  if (!instance) throw new Error(`No instance for this id ${context.id}`);
   if (!instance.space)
     throw new Error('Trying to access an instance without a parent space');
 
@@ -90,7 +90,7 @@ export const isOwnerOrMember = async (
 
   if (approved) return context;
 
-  throw new Error('User is not a member of the parent group of this resource');
+  throw new Error('User is not the owner or a member of the parent group of this resource');
 };
 
 export const isOwner = async (context: HookContext): Promise<HookContext> => {
@@ -103,7 +103,7 @@ export const isOwner = async (context: HookContext): Promise<HookContext> => {
 
   if (approved) return context;
 
-  throw new Error('User is not a owner of the parent group of this resource');
+  throw new Error('User is not the owner of the parent group of this resource');
 };
 
 export const isMember = async (context: HookContext): Promise<HookContext> => {

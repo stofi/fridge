@@ -10,23 +10,32 @@ import {
 import { Group } from '../types';
 
 const instanceOwnerOrMember = async (context: HookContext): Promise<Group> => {
-  const [instance] = await findInstance(context.id as Id, context);
-  if (!instance) throw new Error(`No instance for this id ${context.id}`);
-  if (!instance.space)
-    throw new Error('Trying to access an instance without a parent space');
+  let group: any;
+  if (context.id) {
+    const [instance] = await findInstance(context.id as Id, context);
+    if (!instance) throw new Error(`No instance for this id ${context.id}`);
+    if (!instance.space)
+      throw new Error('Trying to access an instance without a parent space');
 
-  let group: any = instance.space.group;
-
-  if (!group) {
-    const space: any = instance.space;
-    if (space.group) {
-      group = space.group;
-    } else {
-      const [parentSpace] = await findSpace(space as Id, context);
-      if (!parentSpace) throw new Error('No space for this id');
-      group = parentSpace.group;
+    group = instance.space.group;
+    if (!group) {
+      const space: any = instance.space;
+      if (space.group) {
+        group = space.group;
+      } else {
+        const [parentSpace] = await findSpace(space as Id, context);
+        if (!parentSpace) throw new Error('No space for this id');
+        group = parentSpace.group;
+      }
     }
+  } else if (context.data.space) {
+    const [parentSpace] = await findSpace(context.data.space as Id, context);
+    if (!parentSpace) throw new Error('No space for this id');
+    group = parentSpace.group;
+  } else {
+    throw new Error('Error checking membership for this instance');
   }
+
   const [parentGroup] = !group._id
     ? await findGroup(group as Id, context)
     : [group];
@@ -37,13 +46,21 @@ const instanceOwnerOrMember = async (context: HookContext): Promise<Group> => {
 };
 
 const spaceOwnerOrMember = async (context: HookContext): Promise<Group> => {
-  const [space] = await findSpace(context.id as Id, context);
-  if (!space) throw new Error('No space for this id');
+  let group: any;
+  if (context.id) {
+    const [space] = await findSpace(context.id as Id, context);
+    if (!space) throw new Error('No space for this id');
 
-  if (!space.group)
-    throw new Error('Trying to access a space without a parent group');
+    if (!space.group)
+      throw new Error('Trying to access a space without a parent group');
 
-  const group: any = space.group;
+    group = space.group;
+  } else if (context.data.group) {
+    group = context.data.group;
+  } else {
+    throw new Error('Error checking membership for this space');
+  }
+
   const [parentGroup] = !group._id
     ? await findGroup(group as Id, context)
     : [group];
@@ -90,7 +107,9 @@ export const isOwnerOrMember = async (
 
   if (approved) return context;
 
-  throw new Error('User is not the owner or a member of the parent group of this resource');
+  throw new Error(
+    'User is not the owner or a member of the parent group of this resource'
+  );
 };
 
 export const isOwner = async (context: HookContext): Promise<HookContext> => {

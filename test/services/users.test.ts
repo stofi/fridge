@@ -43,9 +43,9 @@ describe('\'users\' service', () => {
 
     it('cleans default group', async () => {
       setTimeout(async () => {
-        const deletedGroup = await app.service('groups').get(defaultGroup);
+        const deletedGroup = app.service('groups').get(defaultGroup);
 
-        expect(deletedGroup).toBeFalsy();
+        expect(deletedGroup).rejects.toBeInstanceOf(Error);
       }, 1000);
     });
   });

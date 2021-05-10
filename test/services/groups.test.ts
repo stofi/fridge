@@ -61,7 +61,7 @@ describe('\'groups\' service', () => {
           .service('spaces')
           .get(defaultSpace, { user: user._id });
 
-        expect(deletedSpace).rejects.toBeFalsy();
+        expect(deletedSpace).rejects.toBeInstanceOf(Error);
       }, 500);
     });
   });

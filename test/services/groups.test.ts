@@ -49,7 +49,7 @@ describe('\'groups\' service', () => {
       await app.service('groups').remove(group._id, {
         user: user._id,
       });
-      
+
       const deletedGroup = app.service('groups').get(group._id);
 
       expect(deletedGroup).rejects.toBeInstanceOf(Error);
@@ -57,11 +57,11 @@ describe('\'groups\' service', () => {
 
     it('cleans default space', async () => {
       setTimeout(async () => {
-        const deletedSpace = await app
-          .service('groups')
+        const deletedSpace = app
+          .service('spaces')
           .get(defaultSpace, { user: user._id });
 
-        expect(deletedSpace).toBeFalsy();
+        expect(deletedSpace).rejects.toBeFalsy();
       }, 500);
     });
   });
